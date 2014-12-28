@@ -52,8 +52,29 @@ void Event::removeExpense(Expense& expense) {
     expenses.erase(remove(expenses.begin(), expenses.end(), expense), expenses.end());
 }
 
-vector<WhoPay> Event::CalculateWhoPayWho() {
+vector<WhoPay> Event::calculateWhoPayWho() {
     vector<WhoPay> result(10);
+
+    totalExpenses = 0.0;
+    cout << "Who had expenses, and how much (in " << currency.getCode() << "):" <<  endl;
+    for (auto &person : persons){
+        for (auto &exp : expenses){
+            if (person == exp.getPerson()){
+                //TODO: add to persons total expense
+                totalExpenses += exp.getAmount();
+            }
+        }
+    }
+    for (auto &person : persons){
+        cout << "\t" << person.getName() << ": " << endl;
+    }
+    pricePerPerson = totalExpenses / persons.size();
+
+
+    cout << "Who had expenses when the price pr. person is subtracted (in " << currency.getCode() << "):" <<  endl;
+    for (auto &person : persons){
+        //TODO: do something
+    }
 
     return result;
 }
@@ -68,4 +89,6 @@ void Event::print() const {
     for(auto &expen : expenses){
         cout << "\t" << expen.getTitle() << ": " << expen.getAmount() << " " << expen.getCurrency().getCode() << endl;
     }
+    cout << "Price per person " << pricePerPerson << endl;
+    cout << "Total price: " << totalExpenses << endl;
 }

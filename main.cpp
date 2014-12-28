@@ -15,9 +15,7 @@ int main() {
     event.addExpense(pizza1);
     event.addExpense(pizza2);
     event.addExpense(pizza3);
-    event.print();
-    event.removePerson(john);
-    event.removeExpense(pizza2);
+    event.calculateWhoPayWho();
     event.print();
     return 0;
 }

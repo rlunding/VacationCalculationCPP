@@ -25,7 +25,7 @@ public:
     void addExpense(Expense& expense);
     void removeExpense(Expense& expense);
 
-    vector<WhoPay> CalculateWhoPayWho();
+    vector<WhoPay> calculateWhoPayWho();
 
     void print() const;
 
