@@ -2,6 +2,7 @@
 #define PERSON_H
 
 #include <string>
+#include <functional>
 
 using namespace std;
 
@@ -16,9 +17,16 @@ public:
 private:
     string name;
     string mail;
+
 };
 
 bool operator==(Person const &left, Person const &right);
 bool operator!=(Person const &left, Person const &right);
 
+struct person_hash{
+    inline size_t operator()(const Person& o) const {
+        hash<string> str_hash;
+        return str_hash(o.getName()) * 13 + str_hash(o.getMail()) * 17;
+    }
+};
 #endif

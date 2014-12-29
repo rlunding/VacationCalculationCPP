@@ -1,3 +1,4 @@
+#include <ios>
 #include "Currency.h"
 #include "WhoPay.h"
 
@@ -18,19 +19,39 @@ WhoPay::WhoPay(Person payer, Person receiver, double amount, Currency currency) 
 }
 
 Person WhoPay::getPayer() const {
-    return Person();
+    return payer;
 }
 
 Person WhoPay::getReceiver() const {
-    return Person();
+    return receiver;
 }
 
 double WhoPay::getAmount() const {
-    return 0;
+    return amount;
 }
 
 Currency WhoPay::getCurrency() const {
-    return Currency();
+    return currency;
+}
+
+int WhoPay::compare(const WhoPay &right) const {
+    if (payer.compare(right.getPayer()) != 0){
+        return payer.compare(right.getPayer());
+    }
+    if (receiver.compare(right.getReceiver()) != 0){
+        return receiver.compare(right.getReceiver());
+    }
+    if (currency.compare(right.getCurrency()) != 0){
+        return currency.compare(right.getCurrency());
+    }
+    return (int) (amount * 100 - right.getAmount() * 100);
 }
 
 
+bool operator==(const WhoPay& left, const WhoPay& right) {
+    return left.compare(right) == 0;
+}
+
+bool operator!=(const WhoPay& left, const WhoPay& right) {
+    return left.compare(right) != 0;
+}

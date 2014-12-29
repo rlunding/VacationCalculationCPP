@@ -1,5 +1,7 @@
 #include <string>
 #include <iostream>
+#include <unordered_set>
+#include <unordered_map>
 #include "Event.h"
 
 using namespace std;
@@ -54,19 +56,24 @@ void Event::removeExpense(Expense& expense) {
 
 vector<WhoPay> Event::calculateWhoPayWho() {
     vector<WhoPay> result(10);
+    unordered_set<WhoPay, whopay_hash> payList(persons.size());
+    unordered_set<Person, person_hash> giveMoney();
+    unordered_set<Person, person_hash> getMoney();
+    unordered_map<Person, double, person_hash> expense (persons.size());
 
     totalExpenses = 0.0;
     cout << "Who had expenses, and how much (in " << currency.getCode() << "):" <<  endl;
     for (auto &person : persons){
         for (auto &exp : expenses){
             if (person == exp.getPerson()){
-                //TODO: add to persons total expense
-                totalExpenses += exp.getAmount();
+                double amount = getAmountInEventCurrency(exp);
+                expense[person] = amount + expense[person];
+                totalExpenses += amount;
             }
         }
     }
     for (auto &person : persons){
-        cout << "\t" << person.getName() << ": " << endl;
+        cout << "\t" << person.getName() << ": " << expense[person] << endl;
     }
     pricePerPerson = totalExpenses / persons.size();
 
@@ -91,4 +98,11 @@ void Event::print() const {
     }
     cout << "Price per person " << pricePerPerson << endl;
     cout << "Total price: " << totalExpenses << endl;
+}
+
+double Event::getAmountInEventCurrency(Expense expense) {
+    if (currency == expense.getCurrency()){
+        return expense.getAmount();
+    }
+    return (expense.getAmount() * expense.getCurrency().getRate()) / currency.getRate();
 }
