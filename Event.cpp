@@ -55,10 +55,9 @@ void Event::removeExpense(Expense& expense) {
 }
 
 vector<WhoPay> Event::calculateWhoPayWho() {
-    vector<WhoPay> result(10);
-    unordered_set<WhoPay, whopay_hash> payList(persons.size());
-    unordered_set<Person, person_hash> giveMoney();
-    unordered_set<Person, person_hash> getMoney();
+    vector<WhoPay> result;
+    vector<Person> giveMoney;
+    vector<Person> getMoney;
     unordered_map<Person, double, person_hash> expense (persons.size());
 
     totalExpenses = 0.0;
@@ -80,9 +79,57 @@ vector<WhoPay> Event::calculateWhoPayWho() {
 
     cout << "Who had expenses when the price pr. person is subtracted (in " << currency.getCode() << "):" <<  endl;
     for (auto &person : persons){
-        //TODO: do something
+        double amount = expense[person] - pricePerPerson;
+        expense[person] = amount;
+        if (amount > 0){
+            getMoney.push_back(person);
+        } else if(amount < 0){
+            giveMoney.push_back(person);
+        }
+    }
+    for (auto &person : persons){
+        cout << "\t" << person.getName() << ", " << expense[person] << endl;
+    }
+    cout << "These need some money" << endl;
+    for (auto &person : getMoney){
+        cout << "\t" << person.getName() << endl;
+    }
+    cout << "These will give some money" << endl;
+    for (auto &person : giveMoney){
+        cout << "\t" << person.getName() << endl;
     }
 
+
+    cout << "Who is going to pay who: " << endl;
+    while(!getMoney.empty() && !giveMoney.empty()){
+        Person get = getMoney.back();
+        Person give = giveMoney.back();
+        double amountGet = expense[get];
+        double amountGive = abs(expense[give]);
+        double pay = 0;
+        if (amountGet > amountGive){
+            pay = amountGive;
+            giveMoney.pop_back();
+            expense[give] = 0;
+            expense[get] = expense[get] - pay;
+        } else if(amountGet < amountGive){
+            pay = amountGet;
+            getMoney.pop_back();
+            expense[give] = expense[give] + pay;
+            expense[get] = 0;
+        } else {
+            pay = amountGive;
+            giveMoney.pop_back();
+            getMoney.pop_back();
+            expense[give] = 0;
+            expense[get] = 0;
+        }
+        result.push_back(WhoPay(give, get, pay, currency));
+
+        for (auto &wp : result) {
+            cout << wp.getPayer().getName() << " give " << wp.getAmount() << wp.getCurrency().getCode() << " to: " << wp.getReceiver().getName() << endl;
+        }
+    }
     return result;
 }
 
