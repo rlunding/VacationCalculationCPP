@@ -99,7 +99,6 @@ vector<WhoPay> Event::calculateWhoPayWho() {
         cout << "\t" << person.getName() << endl;
     }
 
-
     cout << "Who is going to pay who: " << endl;
     while(!getMoney.empty() && !giveMoney.empty()){
         Person get = getMoney.back();
@@ -107,12 +106,12 @@ vector<WhoPay> Event::calculateWhoPayWho() {
         double amountGet = expense[get];
         double amountGive = abs(expense[give]);
         double pay = 0;
-        if (amountGet > amountGive){
+        if (amountGet > amountGive + EPSILON){
             pay = amountGive;
             giveMoney.pop_back();
             expense[give] = 0;
             expense[get] = expense[get] - pay;
-        } else if(amountGet < amountGive){
+        } else if(EPSILON + amountGet < amountGive){
             pay = amountGet;
             getMoney.pop_back();
             expense[give] = expense[give] + pay;
@@ -125,10 +124,13 @@ vector<WhoPay> Event::calculateWhoPayWho() {
             expense[get] = 0;
         }
         result.push_back(WhoPay(give, get, pay, currency));
-
-        for (auto &wp : result) {
-            cout << wp.getPayer().getName() << " give " << wp.getAmount() << wp.getCurrency().getCode() << " to: " << wp.getReceiver().getName() << endl;
-        }
+    }
+    for (auto &wp : result) {
+        cout << wp.getPayer().getName() << " give " << wp.getAmount() << wp.getCurrency().getCode() << " to: " << wp.getReceiver().getName() << endl;
+    }
+    cout << "Print of expenses, should be 0 for all:" << endl;
+    for (auto &person : persons){
+        cout << "\t" << person.getName() << ", " << expense[person] << endl;
     }
     return result;
 }

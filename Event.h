@@ -36,6 +36,7 @@ private:
     vector<Expense> expenses;
     double totalExpenses;
     double pricePerPerson;
+    double EPSILON = 0.1;
 
     double getAmountInEventCurrency(Expense expense);
 };
